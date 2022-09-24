@@ -1,7 +1,12 @@
-import json
-from typing import TypedDict
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from django.forms.models import model_to_dict
+from .serializers import UserSerializer
+from rest_framework.generics import get_object_or_404
+from rest_framework import status
+
+from .models import UserModel
+
 
 # HW
 # Створюємо в коні проекту файл users.json (в нього будете записувати ваших юзерів)
@@ -64,73 +69,81 @@ from rest_framework.response import Response
 #                 return Response(user)
 #             return Response('not found')
 
-User = TypedDict('User', {'id': int, 'name': str, 'age': int})
-FILE = 'users.json'
-
-
-class FileTools:
-    @property
-    def users(self) -> list[User]:
-        try:
-            with open(FILE) as file:
-                return json.load(file)
-        except:
-            return []
-
-    @staticmethod
-    def save(users: list[User]) -> None:
-        with open(FILE, 'w') as file:
-            json.dump(users, file)
-
-
-class UserListCreateView(APIView, FileTools):
+class UserListCreateView(APIView):
     def get(self, *args, **kwargs):
-        return Response(self.users)
+        qs = UserModel.objects.all()
+        # res = [model_to_dict(user) for user in qs]
+        # print(qs)
+        serializer = UserSerializer(qs, many=True)
+        return Response(serializer.data, status.HTTP_200_OK)
 
     def post(self, *args, **kwargs):
-        users = self.users
-        user = self.request.data
-        user['id'] = users[-1]['id'] + 1 if users else 1
-        users.append(user)
-        try:
-            self.save(users)
-        except:
-            return Response('Error')
-        return Response(user)
+        # data = self.request.data
+        # user = UserModel(**data)
+        # user.save()
+        # return Response(model_to_dict(user))
+        data = self.request.data
+        serializer = UserSerializer(data=data)
+        # if not serializer.is_valid():
+        #     return Response(serializer.errors)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data,status.HTTP_201_CREATED)
 
 
-class UserRetrieveUpdateDestroyView(APIView, FileTools):
+class UserRetrieveUpdateDestroyView(APIView):
     def get(self, *args, **kwargs):
         pk = kwargs.get('pk')
-        user = next((item for item in self.users if item['id'] == pk), None)
-        if not user:
-            return Response('Not found user')
-        return Response(user)
+        # qs = UserModel.objects.filter(pk=pk)
+        # exists = qs.exists()
+        # if not exists:
+        #     return Response('Not found user')
+        # # user = qs.first()
+        # user = UserModel.objects.get(pk=pk)
+        # # return Response(model_to_dict(user))
+        user = get_object_or_404(UserModel, pk=pk)
+        serializer = UserSerializer(user)
+        return Response(serializer.data, status.HTTP_200_OK)
 
     def put(self, *args, **kwargs):
         pk = kwargs.get('pk')
-        users = self.users
-        user = next((item for item in users if item['id'] == pk), None)
-        if not user:
-            return Response('User not found')
-        user |= self.request.data
-        try:
-            self.save(users)
-        except:
-            return Response('Error')
-        return Response (user)
+        # qs = UserModel.objects.filter(pk=pk)
+        # exists = qs.exists()
+        # if not exists:
+        #     return Response('Not found user')
+        # data = self.request.data
+        # qs.update(**data)
+        # user = UserModel.objects.get(pk=pk)
+        # # name = data.get('name')
+        # # age = data.get('age')
+        # # user.name = name
+        # # user.age = age
+        # # user.save()
+        # return Response(model_to_dict(user))
+        user = get_object_or_404(UserModel, pk=pk)
+        data = self.request.data
+        serializer = UserSerializer(user, data=data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status.HTTP_200_OK)
 
-    def delete (self, *args, **kwargs):
+    def patch(self, *args, **kwargs):
         pk = kwargs.get('pk')
-        users = self.users
-        index = next((i for i, item in enumerate (users) if item['id'] == pk), None)
-        if index is None:
-            return Response('User not found')
-        del users[index]
-        try:
-            self.save(users)
-        except:
-            return Response('Error')
-        return Response('deleted')
+        user = get_object_or_404(UserModel, pk=pk)
+        data = self.request.data
+        serializer = UserSerializer(user, data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data,status.HTTP_200_OK)
 
-
+    def delete(self, *args, **kwargs):
+        pk = kwargs.get('pk')
+        # qs = UserModel.objects.filter(pk=pk)
+        # exists = qs.exists()
+        # if not exists:
+        #     return Response('Not found user')
+        # user = UserModel.objects.get(pk=pk)
+        # user.delete()
+        user = get_object_or_404(UserModel, pk=pk)
+        user.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
