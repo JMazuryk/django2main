@@ -7,7 +7,7 @@ from apps.cars.models import CarModel
 class CarSerializer(ModelSerializer):
     class Meta:
         model = CarModel
-        fields = '__all__'
+        fields = ('id', 'brand', 'price', 'year')
 
     # def validate_year(self, year: int):
     #     if str(year)[-2] == '2':
@@ -21,6 +21,7 @@ class CarSerializer(ModelSerializer):
     #         raise ValidationError('year == price')
     #     return super().validate(attrs)
     #
+
 
 class CarAllSerializer(ModelSerializer):
     class Meta:

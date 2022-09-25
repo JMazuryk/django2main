@@ -1,28 +1,24 @@
-from rest_framework import status
-from rest_framework.generics import get_object_or_404, GenericAPIView,ListCreateAPIView, RetrieveUpdateDestroyAPIView
-from rest_framework.response import Response
-from rest_framework.views import APIView
-from django.db.models import Q
-from rest_framework.mixins import CreateModelMixin, ListModelMixin, UpdateModelMixin, DestroyModelMixin, \
-    RetrieveModelMixin
-
+from rest_framework.generics import ListAPIView, RetrieveUpdateDestroyAPIView
 from apps.cars.models import CarModel
 from apps.cars.serializers import CarAllSerializer, CarSerializer
 
-class CarListCreateView(ListCreateAPIView):
-    queryset = CarModel.objects.all()
-    serializer_class = CarSerializer
 
-    def get_serializer(self, *args, **kwargs):
-        if self.request.method == 'GET':
-            return CarAllSerializer(*args, **kwargs)
-        return super().get_serializer(*args, **kwargs)
+class CarListView(ListAPIView):
+    queryset = CarModel.objects.all()
+    serializer_class = CarAllSerializer
 
     def get_queryset(self):
-        year_gt = self.request.query_params.get('year_gt')
-        if year_gt:
-            return self.queryset.filter(year__gt=year_gt)
-            return super().get_queryset()
+        # year_gt = self.request.query_params.get('year_gt')
+        # if year_gt:
+        #     return self.queryset.filter(year__gt=year_gt)
+        queryset = super().get_queryset()
+        # queryset = queryset.order_by('brand', 'year')
+        # queryset = queryset.exclude(brand='acura ').order_by('brand', 'year')
+        # queryset = queryset[:3]
+        # queryset = queryset[2:4]
+        # queryset = queryset.order_by('id').reverse()
+        print(queryset.count())
+        return queryset
 
 
 # class CarListCreateView(GenericAPIView, ListModelMixin, CreateModelMixin):
