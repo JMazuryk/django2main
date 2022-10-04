@@ -11,6 +11,8 @@ mysqlclient = "==2.1.1"
 pytz = "==2022.2.1"
 sqlparse = "==0.4.3"
 djangorestframework-simplejwt = "*"
+ex = "*"
+django-dotenv = "*"
 
 [dev-packages]
 isort = "*"

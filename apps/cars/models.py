@@ -3,6 +3,7 @@ from django.core import validators as v
 from datetime import date
 
 from apps.auto_parks.models import AutoParkModel
+from apps.cars.managers import CarManager
 
 
 # Create your models here.
@@ -28,3 +29,5 @@ class CarModel(models.Model):
     auto_park = models.ForeignKey(AutoParkModel, on_delete=models.CASCADE, related_name='cars')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    objects = CarManager()
