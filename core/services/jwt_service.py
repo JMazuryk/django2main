@@ -1,8 +1,10 @@
+from typing import Type
+
 from rest_framework_simplejwt.tokens import Token, BlacklistMixin
 from rest_framework.generics import get_object_or_404
 from django.contrib.auth import get_user_model
 
-from apps.users.models import UserModel as USer
+from apps.users.models import UserModel as User
 from core.enums.action_enum import ActionEnum
 from core.exceptions.jwt_exception import JwtException
 
