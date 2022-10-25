@@ -2,15 +2,15 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
-from core.services.jwt_service import JwtService
+from core.services.jwt_service import JwtService, ActivateToken
 from rest_framework import status
 
 
 class ActivateUserView(GenericAPIView):
     permission_classes = (AllowAny,)
 
-    def get(self,*args,**kwargs):
+    def get(self, *args, **kwargs):
         token = kwargs.get('token')
-        user = JwtService.validate_token(token)
+        user = JwtService.validate_token(token, ActivateToken)
         user.save()
         return Response(status=status.HTTP_200_OK)
