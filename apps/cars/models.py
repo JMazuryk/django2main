@@ -22,9 +22,11 @@ from apps.cars.managers import CarManager
 class CarModel(models.Model):
     class Meta:
         db_table = 'cars'
+        ordering = ('id',)
 
     brand = models.CharField(max_length=20, validators=(v.MinLengthValidator(3),), blank=True)
-    year = models.IntegerField(validators=(v.MinValueValidator(1990), v.MaxValueValidator(date.today().year)), null=True)
+    year = models.IntegerField(validators=(v.MinValueValidator(1990), v.MaxValueValidator(date.today().year)),
+                               null=True)
     price = models.IntegerField(validators=(v.MinValueValidator(0), v.MaxValueValidator(10000000)), default=50000)
     auto_park = models.ForeignKey(AutoParkModel, on_delete=models.CASCADE, related_name='cars')
     created_at = models.DateTimeField(auto_now_add=True)

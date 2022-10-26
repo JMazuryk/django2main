@@ -13,6 +13,7 @@ sqlparse = "==0.4.3"
 djangorestframework-simplejwt = "*"
 ex = "*"
 django-dotenv = "*"
+django-filter = "*"
 
 [dev-packages]
 isort = "*"
